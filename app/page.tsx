@@ -1,6 +1,35 @@
+'use client';
+
 import Link from 'next/link';
+import { useEffect } from 'react';
+import { useRouter } from 'next/navigation';
+import { useAuth } from '@/contexts/AuthContext';
 
 export default function Home() {
+  const { currentUser, loading } = useAuth();
+  const router = useRouter();
+
+  useEffect(() => {
+    // Redirect authenticated users to dashboard
+    if (!loading && currentUser) {
+      router.push('/dashboard');
+    }
+  }, [currentUser, loading, router]);
+
+  // Show loading state while checking auth
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-white flex items-center justify-center">
+        <div className="text-gray-600">Loading...</div>
+      </div>
+    );
+  }
+
+  // Don't render landing page if user is authenticated (will redirect)
+  if (currentUser) {
+    return null;
+  }
+
   return (
     <div className="min-h-screen bg-white">
       {/* Navigation */}
@@ -8,9 +37,7 @@ export default function Home() {
         <div className="max-w-7xl mx-auto flex justify-between items-center">
           <div className="text-2xl font-bold text-gray-900">WealthWell AI</div>
           <div className="hidden md:flex space-x-8">
-            <a href="#how-it-works" className="text-gray-600 hover:text-gray-900 transition-colors">How it Works</a>
-            <a href="#features" className="text-gray-600 hover:text-gray-900 transition-colors">Features</a>
-            <a href="#about" className="text-gray-600 hover:text-gray-900 transition-colors">About</a>
+          
           </div>
           <Link href="/auth" className="bg-gray-900 text-white px-6 py-2 rounded-lg hover:bg-gray-800 transition-colors">
             Get Started
@@ -184,7 +211,7 @@ export default function Home() {
             <div>
               <h4 className="font-semibold text-gray-900 mb-4">Legal</h4>
               <ul className="space-y-2 text-gray-600">
-                <li><a href="#" className="hover:text-gray-900 transition-colors">Privacy Policy</a></li>
+                <li><a href="/privacy" className="hover:text-gray-900 transition-colors">Privacy Policy</a></li>
                 <li><a href="#" className="hover:text-gray-900 transition-colors">Terms of Service</a></li>
                 <li><a href="#" className="hover:text-gray-900 transition-colors">Disclaimer</a></li>
               </ul>
